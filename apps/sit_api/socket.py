@@ -5,32 +5,27 @@ import json
 # Third Party
 import websockets
 
-from .auth import Authenticator
+
+HOST = "ws://192.168.0.101:8000/"
 
 
-HOST = "127.0.0.1"
-PORT = 5500
-
-
-class BleSocket:
-    def __init__(self) -> None:
+class BleWebsocket:
+    def __init__(self, mesh) -> None:
         # self._auth = Authenticator()
         # self._auth.login()
-        pass
+        self.mesh = mesh
 
-    async def hello(self):
-        uri = "ws://127.0.0.1:5500/ws/ble-scan/"
+    async def connect(self):
+        uri = HOST + "ws/ble-scan/"
         async for websocket in websockets.connect(uri):
             try:
-                # Close the connection when receiving SIGTERM.
-                loop = asyncio.get_running_loop()
-
                 # Process messages received on the connection.
                 async for text_data in websocket:
                     data = json.loads(text_data)
-                    print(data)
                     if data["scan"]["state"]:
-                        await self.scan()
+                        unprovisioned = await self.scan()
+                        lst = list(unprovisioned)
+                        lst = [str(i) for i in lst]
                         await websocket.send(
                             json.dumps(
                                 {
@@ -38,6 +33,7 @@ class BleSocket:
                                     "scan": {
                                         "state": False,
                                         "message": "Scan Completed",
+                                        "unprovisioned": lst,
                                     },
                                 }
                             )
@@ -49,4 +45,4 @@ class BleSocket:
                 continue
 
     async def scan(self):
-        await asyncio.sleep(10)
+        return await self.mesh.scan()
