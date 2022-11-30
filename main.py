@@ -3,8 +3,6 @@
 # Standard Library
 import asyncio
 
-from contextlib import suppress
-
 # Library
 from apps.sit_api.socket import BleWebsocket
 from apps.sit_ble_mesh.mesh import Mesh

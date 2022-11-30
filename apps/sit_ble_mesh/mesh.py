@@ -3,7 +3,7 @@ import logging
 import logging.config
 import secrets
 
-from contextlib import AsyncExitStack, asynccontextmanager
+from contextlib import AsyncExitStack
 
 # Third Party
 from bluetooth_mesh.application import Application, Element
